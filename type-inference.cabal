@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Inference.Term
   other-modules:
       Paths_type_inference
   hs-source-dirs:
