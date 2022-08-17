@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Inference
       Inference.Term
       Inference.Type
   other-modules:
