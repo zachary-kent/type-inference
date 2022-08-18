@@ -9,23 +9,23 @@ module Inference.Term
   )
 where
 
-import Data.Kind (Type)
-import Inference.Type (Solved)
-import qualified Inference.Type
+import qualified Data.Kind
+import Inference.Type (Solved (..), Type, Var)
 
 -- | Whether the lambda term is typed or untyped
 data Typing = Typed Solved | Untyped
 
 -- | @Node state@ is the the type of a node in the AST given state @state@
-type Node :: Typing -> Type
+type Node :: Typing -> Data.Kind.Type
 type family Node a where
 -- An untyped node is just the term itself
   Node 'Untyped = Term 'Untyped
 -- A typed node is the term tagged with its corresponding type
-  Node ('Typed b) = (Term ('Typed b), Inference.Type.Type b)
+  Node ('Typed 'Solved) = (Term ('Typed 'Solved), Type 'Solved)
+-- If some constraints are unsolved, may be tagged with some type variables
+  Node ('Typed 'Unsolved) = (Term ('Typed 'Unsolved), Var)
 
 -- | A term in the lambda calculus
-type Term :: Typing -> Type
 data Term a
   = -- | The only inhabitant of the unit type, ()
     Unit
