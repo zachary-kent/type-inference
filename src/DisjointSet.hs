@@ -23,6 +23,5 @@ lookupOrInsert t k v' = H.mutate t k value
 -- | Find the representative of the set containing a given key. If the key is
 -- absent, create a singleton set for it
 find :: (Eq a, Hashable a) => DisjointSet s a b -> a -> ST s (Node.Parent s a b)
-find (DisjointSet t) k = do
-  singleton <- Node.new k
-  Node.find =<< lookupOrInsert t k singleton
+find (DisjointSet t) k =
+  Node.find =<< lookupOrInsert t k =<< Node.new k
