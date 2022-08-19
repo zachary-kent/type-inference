@@ -40,7 +40,7 @@ data Node s a b = Node
     value :: a
   }
 
--- | Construct a new disjoint
+-- | Construct a new disjoint set
 new :: a -> ST s (Node s a b)
 new value = do
   parent <- newSTRef Nothing

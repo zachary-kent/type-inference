@@ -1,27 +1,20 @@
 module DisjointSet (DisjointSet, new, find) where
 
 import Control.Monad.ST (ST)
-import qualified Data.HashTable.ST.Basic as H
-import Data.Hashable (Hashable)
+import Data.Vector (Vector, (!))
+import qualified Data.Vector as Vector
 import DisjointSet.Node (Node)
 import qualified DisjointSet.Node as Node
 
-newtype DisjointSet s a b = DisjointSet (H.HashTable s a (Node s a b))
+-- | A collection of disjoint set
+newtype DisjointSet s a = DisjointSet (Vector (Node s Int a))
 
--- | Create an empty disjoint set
-new :: ST s (DisjointSet s a b)
-new = DisjointSet <$> H.new
+-- | @new len@ is a collection of @len@ disjoint singleton subsets, wrapped
+-- in the ST Monad
+new :: Int -> ST s (DisjointSet s a)
+new len = DisjointSet <$> Vector.generateM len Node.new
 
--- | Lookup a key, return the found value if present. If not, insert and return
--- the provided default value
-lookupOrInsert :: (Eq k, Hashable k) => H.HashTable s k v -> k -> v -> ST s v
-lookupOrInsert t k v' = H.mutate t k value
-  where
-    value Nothing = (Just v', v')
-    value prev@(Just v) = (prev, v)
-
--- | Find the representative of the set containing a given key. If the key is
--- absent, create a singleton set for it
-find :: (Eq a, Hashable a) => DisjointSet s a b -> a -> ST s (Node.Parent s a b)
-find (DisjointSet t) k =
-  Node.find =<< lookupOrInsert t k =<< Node.new k
+-- | Find the representative of the set containing a given key. Error if the
+-- | key is out of range
+find :: DisjointSet s a -> Int -> ST s (Node.Parent s Int a)
+find (DisjointSet t) = Node.find . (t !)

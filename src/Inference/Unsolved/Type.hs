@@ -1,4 +1,4 @@
-module Inference.Type.Unsolved (Type (..), Node) where
+module Inference.Unsolved.Type (Type (..), Node) where
 
 import qualified Inference.Type
 
