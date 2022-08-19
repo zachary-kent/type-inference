@@ -1,37 +1,27 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Inference.Term
   ( Term (..),
-    Typing (..),
-    Node,
+    pattern (:=>),
+    pattern (:$:),
   )
 where
-
-import qualified Data.Kind
-import Inference.Type (Solved (..), Type, Var)
-
--- | Whether the lambda term is typed or untyped
-data Typing = Typed Solved | Untyped
-
--- | @Node state@ is the the type of a node in the AST given state @state@
-type Node :: Typing -> Data.Kind.Type
-type family Node a where
--- An untyped node is just the term itself
-  Node 'Untyped = Term 'Untyped
--- A typed node is the term tagged with its corresponding type
-  Node ('Typed 'Solved) = (Term ('Typed 'Solved), Type 'Solved)
--- If some constraints are unsolved, may be tagged with some type variables
-  Node ('Typed 'Unsolved) = (Term ('Typed 'Unsolved), Var)
 
 -- | A term in the lambda calculus
 data Term a
   = -- | The only inhabitant of the unit type, ()
     Unit
   | -- | Abstraction
-    Abs String (Node a)
+    Abs String a
   | -- | Application
-    App (Node a) (Node a)
+    App a a
   | -- | Variable
     Var String
+
+-- | Infix abstraction pattern
+pattern (:=>) :: String -> a -> Term a
+pattern e1 :=> e2 = Abs e1 e2
+
+-- | Infix application pattern
+pattern (:$:) :: a -> a -> Term a
+pattern e1 :$: e2 = App e1 e2

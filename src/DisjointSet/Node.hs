@@ -1,19 +1,19 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
 module DisjointSet.Node
-  ( Node (..),
-    Var,
+  ( Node,
+    Parent (..),
     find,
     new,
-    unionVars,
-    unionVarConstr,
+    union,
+    value,
+    setRoot,
   )
 where
 
-import Control.Monad.Except
-import Control.Monad.ST
+import Control.Monad (when)
+import Control.Monad.ST (ST)
 import Data.STRef
   ( STRef,
     modifySTRef',
@@ -21,47 +21,54 @@ import Data.STRef
     readSTRef,
     writeSTRef,
   )
-import Inference.Type (Solved (..), Type)
-import qualified Inference.Type as Type
 
 -- | A Disjoint set node. We ensure there is only one type constructor per
 -- equivalence class by only allowing type variables to have a parent
-data Node s
-  = -- | A type constructor
-    Constructor (Type.Node 'Unsolved)
-  | -- | A type variable
-    VarNode (Var s)
+data Parent s a b
+  = -- | A type variable
+    Child (Node s a b)
+  | -- | A type constructor
+    Root b
 
 -- | A type variable in the disjoint set
-data Var s = Var
+data Node s a b = Node
   { -- | The parent of this Node, if any
-    parent :: STRef s (Maybe (Node s)),
+    parent :: STRef s (Maybe (Parent s a b)),
     -- | The rank (height) of this node
     rank :: STRef s Int,
     -- | The index of the type variable stored in this node
-    index :: Int
+    value :: a
   }
 
 -- | Construct a new disjoint
-new :: Type 'Unsolved -> ST s (Node s)
-new (Type.Constructor ty) = return $ Constructor ty
-new (Type.Var index) = do
+new :: a -> ST s (Node s a b)
+new value = do
   parent <- newSTRef Nothing
   rank <- newSTRef 0
-  return $ VarNode $ Var {parent, rank, index}
+  return $ Node {parent, rank, value}
 
-find :: Node s -> ST s (Node s)
-find root@(Constructor _) = return root
-find child@(VarNode (Var {parent})) =
+-- | Inserting a value into a reference containing a Maybe
+replaceSTRef :: STRef s (Maybe a) -> a -> ST s ()
+replaceSTRef ref = writeSTRef ref . Just
+
+-- | Find the representative of a given node
+find :: Node s a b -> ST s (Parent s a b)
+find child@(Node {parent}) =
   readSTRef parent >>= \case
-    Nothing -> return child
-    Just parentNode -> do
+    Nothing -> return $ Child child
+    Just root@(Root _) -> return root
+    Just (Child parentNode) -> do
       root <- find parentNode
-      writeSTRef parent $ Just root
+      replaceSTRef parent root
       return root
 
-unionVars :: Var s -> Var s -> ST s ()
-unionVars n1@(Var {rank = r1Ref}) n2@(Var {rank = r2Ref}) = do
+-- | Set the parent of a disjoint set node
+setParent :: Node s a b -> Parent s a b -> ST s ()
+setParent = replaceSTRef . parent
+
+-- | Take the union of the the representatives of two sets6
+union :: Node s a b -> Node s a b -> ST s ()
+union n1@(Node {rank = r1Ref}) n2@(Node {rank = r2Ref}) = do
   r1 <- readSTRef r1Ref
   r2 <- readSTRef r2Ref
   -- node with greater rank becomes parent
@@ -69,8 +76,8 @@ unionVars n1@(Var {rank = r1Ref}) n2@(Var {rank = r2Ref}) = do
   let (c, p) = if r1 < r2 then (n1, n2) else (n2, n1)
   -- if ranks equal, then the rank of n1 increases by 1
   when (r1 == r2) $ modifySTRef' r1Ref succ
-  writeSTRef (parent c) $ Just $ VarNode p
+  setParent c $ Child p
 
-unionVarConstr :: Var s -> Type.Node 'Unsolved -> ST s ()
-unionVarConstr Var {parent} typ =
-  writeSTRef parent $ Just $ Constructor typ
+-- | Set the parent of a Node to a root value
+setRoot :: Node s a b -> b -> ST s ()
+setRoot child = setParent child . Root

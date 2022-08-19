@@ -29,7 +29,11 @@ library
       DisjointSet.Node
       Inference
       Inference.Term
+      Inference.Term.Decorated
+      Inference.Term.Undecorated
       Inference.Type
+      Inference.Type.Solved
+      Inference.Type.Unsolved
   other-modules:
       Paths_type_inference
   hs-source-dirs:
@@ -37,6 +41,8 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , hashable
+    , hashtables
     , mtl
   default-language: Haskell2010
 
@@ -49,6 +55,8 @@ executable type-inference-exe
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , hashable
+    , hashtables
     , mtl
     , type-inference
   default-language: Haskell2010
@@ -63,6 +71,8 @@ test-suite type-inference-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , hashable
+    , hashtables
     , mtl
     , type-inference
   default-language: Haskell2010
