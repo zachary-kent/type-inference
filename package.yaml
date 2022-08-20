@@ -24,6 +24,7 @@ dependencies:
 - mtl
 - containers
 - vector
+- microlens-platform
 
 ghc-options:
 - -Wall

@@ -29,16 +29,14 @@ library
       DisjointSet.Node
       Inference
       Inference.Constraint
-      Inference.Solved.Term
-      Inference.Solved.Type
       Inference.Term
       Inference.Term.Decorated
+      Inference.Term.Decorated.Solved
+      Inference.Term.Decorated.Unsolved
       Inference.Term.Undecorated
       Inference.Type
       Inference.Type.Solved
       Inference.Type.Unsolved
-      Inference.Unsolved.Term
-      Inference.Unsolved.Type
   other-modules:
       Paths_type_inference
   hs-source-dirs:
@@ -47,6 +45,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , microlens-platform
     , mtl
     , vector
   default-language: Haskell2010
@@ -61,6 +60,7 @@ executable type-inference-exe
   build-depends:
       base >=4.7 && <5
     , containers
+    , microlens-platform
     , mtl
     , type-inference
     , vector
@@ -77,6 +77,7 @@ test-suite type-inference-test
   build-depends:
       base >=4.7 && <5
     , containers
+    , microlens-platform
     , mtl
     , type-inference
     , vector
