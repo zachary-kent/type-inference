@@ -28,7 +28,7 @@ data Parent s a b
   = -- | A type variable
     Child (Node s a b)
   | -- | A type constructor
-    Root b
+    Root !b
 
 -- | A type variable in the disjoint set
 data Node s a b = Node

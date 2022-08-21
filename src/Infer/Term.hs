@@ -1,6 +1,6 @@
 {-# LANGUAGE PatternSynonyms #-}
 
-module Inference.Term
+module Infer.Term
   ( Term (..),
     pattern (:=>),
     pattern (:$:),

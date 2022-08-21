@@ -27,16 +27,17 @@ library
   exposed-modules:
       DisjointSet
       DisjointSet.Node
-      Inference
-      Inference.Constraint
-      Inference.Term
-      Inference.Term.Decorated
-      Inference.Term.Decorated.Solved
-      Inference.Term.Decorated.Unsolved
-      Inference.Term.Undecorated
-      Inference.Type
-      Inference.Type.Solved
-      Inference.Type.Unsolved
+      Infer
+      Infer.Constraint.Generate
+      Infer.Constraint.Solve
+      Infer.Term
+      Infer.Term.Decorated
+      Infer.Term.Decorated.Solved
+      Infer.Term.Decorated.Unsolved
+      Infer.Term.Undecorated
+      Infer.Type
+      Infer.Type.Solved
+      Infer.Type.Unsolved
   other-modules:
       Paths_type_inference
   hs-source-dirs:

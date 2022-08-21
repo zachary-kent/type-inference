@@ -1,6 +1,6 @@
-module Inference.Type.Unsolved (Type (..), Node) where
+module Infer.Type.Unsolved (Type (..), Node) where
 
-import qualified Inference.Type
+import qualified Infer.Type
 
 -- A type containing type variables
 data Type
@@ -10,4 +10,4 @@ data Type
     Constructor Node
 
 -- | A node in the type tree
-type Node = Inference.Type.Type Type
+type Node = Infer.Type.Type Type

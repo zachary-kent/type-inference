@@ -1,4 +1,4 @@
-module Inference.Type (Type (..)) where
+module Infer.Type (Type (..)) where
 
 -- | A type in the lambda calculus
 data Type a
